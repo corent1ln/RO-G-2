@@ -1,19 +1,20 @@
 
 import matplotlib.pyplot as plt
 import networkx as nx
-import random
 from mpl_toolkits.basemap import Basemap
 
 class Plot: #todo optimize all
     _node_positions = {}
-    _used_colors = ['#FF6600', 'red']
+    _used_colors = []
+    _available_colors = ['green', 'blue', 'pink', 'cyan', 'purple', 'brown', 'black']
 
     @staticmethod
-    def generate_random_color():
-        while True:
-            color = "#{:02x}{:02x}{:02x}".format(random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+    def get_color():
+        if len(Plot._used_colors) >= len(Plot._available_colors):
+            Plot._used_colors = []
+        for color in Plot._available_colors:
             if color not in Plot._used_colors:
-                Plot._used_colors.append(color)  # Ajouter la couleur utilisée à la liste
+                Plot._used_colors.append(color)
                 return color
 
     @staticmethod
@@ -79,7 +80,7 @@ class Plot: #todo optimize all
                     path_edges = list(zip(path, path[1:])) 
                     path_coords = [node_positions[city] for city in path if city in node_positions]
                     path_x, path_y = zip(*path_coords)
-                    color = Plot.generate_random_color()
+                    color = Plot.get_color()
                     plt.plot(path_x, path_y, color=color, linewidth=2, label=algo_name)
 
         # Plot blocked edges
@@ -127,7 +128,7 @@ class Plot: #todo optimize all
         max_lon += lon_margin
 
         plt.figure(figsize=(10, 8))
-        m = Basemap(projection='merc', llcrnrlat=min_lat, urcrnrlat=max_lat,llcrnrlon=min_lon, urcrnrlon=max_lon, resolution='i')
+        m = Basemap(projection='merc', llcrnrlat=min_lat, urcrnrlat=max_lat,llcrnrlon=min_lon, urcrnrlon=max_lon, resolution='i') #todo see cartopy
         m.drawcoastlines()
         m.drawcountries()
         m.drawmapboundary(fill_color='lightblue')
@@ -239,7 +240,7 @@ class Plot: #todo optimize all
                 if path:
                     path_coords = [city_to_coords[city] for city in path if city in city_to_coords]
                     path_x, path_y = zip(*path_coords)
-                    color = Plot.generate_random_color()
+                    color = Plot.get_color()
                     plt.plot(path_x, path_y, color=color, linewidth=2, label=algo_name)
                     if first_path_coords is None:
                         first_path_coords = (path_x[0], path_y[0])
