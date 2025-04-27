@@ -45,6 +45,11 @@ class MapGraph(AbstractGraph):
         radius = 6371
         return radius * c
     
-    def plot_graph(self,best_path = None,show_graph = True):
-        Plot.plot_map(self.city_coordinates,self, best_path, show_graph)
+    def plot_graph(self, best_paths = None, show_graph = True):
+        if isinstance(best_paths, dict):
+            Plot.plot_paths_comparison__map(self.city_coordinates, self, best_paths, show_graph)
+        else:
+            Plot.plot_map(self.city_coordinates, self, best_paths, show_graph)
+
+    
         

@@ -10,9 +10,9 @@ class AbstractGraph(nx.Graph,ABC):
         self.id = uuid.uuid4()
         self.blocked_edges = []
         self.costly_edges = []
-    
+
     @abstractmethod
-    def plot_graph(self,path):
+    def plot_graph(self, best_paths): #todo add show_all_edge boolean
         pass
 
     def apply_edge_blocking(self,percentage = 20):

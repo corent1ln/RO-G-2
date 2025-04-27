@@ -14,5 +14,16 @@ class RandomGraph(AbstractGraph):
 
     def plot_graph(self,best_path = None):
         Plot.plot_graph(self,best_path)
+    
+
+    def plot_multiple_paths_on_map(self, best_paths):
+        super().plot_multiple_paths_on_map(best_paths)
+
+
+    def plot_graph(self, best_paths = None):
+        if isinstance(best_paths, dict):
+            Plot.plot_paths_comparison_graph(self, best_paths)
+        else:
+              Plot.plot_graph(self, best_paths)
                 
         
