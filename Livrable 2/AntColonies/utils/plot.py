@@ -115,12 +115,13 @@ class Plot:
         plt.title("Best path of map graph" if path else "Map Graph")
         plt.show()
 
-    # Plotting the distance over iterations (second plot) - Shows how the path length improves over time
     @staticmethod
-    def plot_distance_over_iterations(best_distance_history):
-        # Plot the best distance found in each iteration (should decrease over time)
-        plt.plot(best_distance_history, color='green', linewidth=2)
-        plt.title("Trip Length Over Iterations")
+    def plot_comparison_distance_over_iterations(algorithms_results):
+        for algo_name, distances in algorithms_results.items():
+            plt.plot(distances, label=algo_name, linewidth=2)
+
+        plt.title("Comparison of Trip Length Over Iterations")
         plt.xlabel("Iteration")
         plt.ylabel("Distance")
+        plt.legend()
         plt.show()

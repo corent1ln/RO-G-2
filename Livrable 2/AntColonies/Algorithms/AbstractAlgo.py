@@ -1,17 +1,23 @@
 from utils.plot import Plot
 from abc import ABC, abstractmethod
+import uuid
 class AbstractAlgo(ABC):
-    def __init__(self,graph,max_iterations = 100, convergence_threshold = 5):
+    def __init__(self,graph, name = None, min_iterations = 0,max_iterations = 100, convergence_threshold = 5):
         super().__init__()
         self.graph = graph
-        self.best_distance_history = []  # Store the best distance found in each iteration
+        self.distance = 0
+        self.path = []
+        self.distance_history = []
+        self.iterations_needed = 0
+        self.total_interations_realized = 0
+        self.min_iterations = min_iterations
         self.max_iterations = max_iterations # max iterations if the algorithm don't find a solution
         self.convergence_threshold = convergence_threshold # threshold to stop iterations if results are similar
+        if name:
+            self.name = name
+        else:
+            self.name = str(uuid.uuid4())
 
     @abstractmethod
     def run(self):
-        """
-        must return the best path as list and the best distance as float
-        """
-    def plot_distance_over_iterations(self):
-        Plot.plot_distance_over_iterations(self.best_distance_history)
+        pass

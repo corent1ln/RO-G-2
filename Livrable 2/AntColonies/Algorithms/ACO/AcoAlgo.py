@@ -1,10 +1,11 @@
 import numpy as np
 from Algorithms.ACO.Ant import Ant
 from Algorithms.AbstractAlgo import AbstractAlgo
+
 # ACO (Ant Colony Optimization) class runs the algorithm to find the best path
 class AcoAlgo(AbstractAlgo):
-    def __init__(self, graph, num_ants, decay=0.5, alpha=1.0, max_iterations = 100, convergence_threshold = 5):
-        super().__init__(graph, max_iterations, convergence_threshold)
+    def __init__(self, graph, name = None, num_ants = 100, decay=0.5, alpha=1.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
+        super().__init__(graph, name, min_iterations,max_iterations, convergence_threshold)
         self.num_ants = num_ants  # Number of ants in each iteration
         self.decay = decay  # Rate at which pheromones evaporate
         self.alpha = alpha  # Strength of pheromone update
@@ -15,6 +16,7 @@ class AcoAlgo(AbstractAlgo):
         best_path = None
         best_distance = np.inf  # Start with a very large number for comparison
         similar_results_count = 0
+        best_distance_history = []
         # Run the algorithm for the specified number of iterations
         for iteration in range(self.max_iterations):
             ants = [Ant(self.graph,self) for _ in range(self.num_ants)]  # Create a group of ants
@@ -30,18 +32,20 @@ class AcoAlgo(AbstractAlgo):
                         best_path = ant.path
                         best_distance = ant.total_distance
             self.update_pheromones(valid_ants)  # Update pheromones based on the ants' paths
-            self.best_distance_history.append(best_distance)  # Save the best distance for each iteration
+            best_distance_history.append(best_distance)  # Save the best distance for each iteration
             #check if results are simular of the last iteration
-            if len(self.best_distance_history) > 1 and self.best_distance_history[-1] == self.best_distance_history[-2]:
+            if len(best_distance_history) > 1 and best_distance_history[-1] == best_distance_history[-2]:
                 similar_results_count += 1
             else:
                 similar_results_count = 0
 
-            if similar_results_count >= self.convergence_threshold:
-                print(f"Convergence atteinte après {iteration + 1} itérations.")
+            if similar_results_count >= self.convergence_threshold and iteration > self.min_iterations:
                 break
-
-        return best_path
+        self.total_interations_realized = iteration
+        self.iterations_needed = iteration - similar_results_count
+        self.path = best_path
+        self.distance = best_distance
+        self.distance_history = best_distance_history
 
     # Update the pheromones on the paths after all ants have completed their trips
     def update_pheromones(self, ants):
@@ -62,4 +66,6 @@ class AcoAlgo(AbstractAlgo):
 
     def get_pheromone(self, u, v):
         return self.pheromones.get((u, v), self.pheromones.get((v, u), 0))
+    
+
     

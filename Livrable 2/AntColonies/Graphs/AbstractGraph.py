@@ -15,18 +15,6 @@ class AbstractGraph(nx.Graph,ABC):
     def plot_graph(self,path):
         pass
 
-    def get_path_distance(self, path):
-        distance = 0
-        for i in range(len(path) - 1):
-            u, v = path[i], path[i + 1]
-            if (u, v) in self.edges(data=True):
-                distance += self[u][v]['weight']
-            elif (v, u) in self.edges:
-                distance += self[v][u]["weight"]
-            else:
-                raise ValueError(f"Edge ({u}, {v}) not found in the graph.")
-        return distance
-
     def apply_edge_blocking(self,percentage = 20):
         if (percentage < 0):
             percentage = 0
