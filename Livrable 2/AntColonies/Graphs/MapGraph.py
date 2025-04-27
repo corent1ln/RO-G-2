@@ -5,12 +5,14 @@ from utils.plot import Plot
 from math import radians, sin, cos, sqrt, atan2
 
 class MapGraph(AbstractGraph):
-    def __init__(self, cities, start_city):
+    def __init__(self, cities, start_city = None):
         super().__init__()
         random.shuffle(cities)
-        if start_city in cities:
-            cities.remove(start_city)
-        cities.insert(0, start_city)
+        if start_city:
+            if start_city in cities: #else that use the first city of the cities list
+                cities.remove(start_city)
+            cities.insert(0, start_city)
+
         geolocator = Nominatim(user_agent="city_locator", timeout=10)
 
         self.city_coordinates = {}
@@ -43,6 +45,6 @@ class MapGraph(AbstractGraph):
         radius = 6371
         return radius * c
     
-    def plot_graph(self,best_path):
-        Plot.plot_france_map(self.city_coordinates, best_path)
+    def plot_graph(self,best_path = None,show_graph = True):
+        Plot.plot_map(self.city_coordinates,self, best_path, show_graph)
         

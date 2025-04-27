@@ -15,19 +15,25 @@ class Ant:
         # Initialize an array to store the probability for each node
         probabilities = dict()
         # For each unvisited node, calculate the probability based on pheromones and distances                    
-        for node in self.unvisited_nodes:
-            for neighbor in self.graph.neighbors(self.current_node):
-                if  neighbor in self.unvisited_nodes:  # Only consider reachable nodes
-                    pheromone = self.aco.get_pheromone(self.current_node, neighbor)
-                    distance = self.graph[self.current_node][neighbor]['weight']
-                    # The more pheromones and the shorter the distance, the more likely the node will be chosen
-                    probabilities[neighbor] = (pheromone ** 2) / distance
+        for neighbor in self.graph.neighbors(self.current_node):
+            if  neighbor in self.unvisited_nodes:  # Only consider reachable nodes
+                pheromone = self.aco.get_pheromone(self.current_node, neighbor)
+                distance = self.graph[self.current_node][neighbor]['weight']
+                # The more pheromones and the shorter the distance, the more likely the node will be chosen
+                probabilities[neighbor] = (pheromone ** 2) / distance
         
         # Safeguard against division by zero
         total_prob = sum(probabilities.values())
         if total_prob == 0:
-            # If all probabilities are zero, choose randomly among unvisited nodes
-            next_node = np.random.choice(list(self.unvisited_nodes))
+            # If all probabilities are zero, choose randomly among unvisited reachable nodes
+            reachable_unvisited = [
+                neighbor for neighbor in self.graph.neighbors(self.current_node)
+                if neighbor in self.unvisited_nodes
+            ]
+            if reachable_unvisited:
+                next_node = np.random.choice(reachable_unvisited)
+            else:
+                next_node = None
         else:
             # Normalize the probabilities to sum to 1
             probabilities = {node: prob / total_prob for node, prob in probabilities.items()}
@@ -41,16 +47,22 @@ class Ant:
     # Move to the next node and update the ant's path
     def move(self):
         next_node = self.select_next_node()  # Pick the next node
+        if next_node is None:
+            return False
         self.path.append(next_node)  # Add it to the path
         # Add the distance between the current node and the next node to the total distance
         self.total_distance += self.graph[self.current_node][next_node]["weight"]
         self.current_node = next_node  # Update the current node to the next node
         self.unvisited_nodes.remove(next_node)  # Mark the next node as visited
+        return True
 
     # Complete the path by visiting all nodes and returning to the starting node
     def complete_path(self):
         while self.unvisited_nodes:  # While there are still unvisited nodes
-            self.move()  # Keep moving to the next node
-        # After visiting all nodes, return to the starting node to complete the cycle
-        self.total_distance += self.graph[self.current_node][self.path[0]]["weight"]
-        self.path.append(self.path[0])  # Add the starting node to the end of the path
+            if not self.move():
+                break  # If ant blocked
+        if not self.unvisited_nodes:
+            if self.graph.has_edge(self.current_node, self.path[0]):
+                # After visiting all nodes, return to the starting node to complete the cycle
+                self.total_distance += self.graph[self.current_node][self.path[0]]["weight"]
+                self.path.append(self.path[0])  # Add the starting node to the end of the path

@@ -14,16 +14,22 @@ class AcoAlgo(AbstractAlgo):
     def run(self):
         best_path = None
         best_distance = np.inf  # Start with a very large number for comparison
+        similar_results_count = 0
         # Run the algorithm for the specified number of iterations
         for iteration in range(self.max_iterations):
             ants = [Ant(self.graph,self) for _ in range(self.num_ants)]  # Create a group of ants
+            
+            valid_ants = []
+
             for ant in ants:
                 ant.complete_path()  # Let each ant complete its path
-                # If the current ant's path is shorter than the best one found so far, update the best path
-                if ant.total_distance < best_distance:
-                    best_path = ant.path
-                    best_distance = ant.total_distance
-            self.update_pheromones(ants)  # Update pheromones based on the ants' paths
+                if len(ant.path) == len(self.graph.nodes) + 1:
+                    valid_ants.append(ant)
+                    # If the current ant's path is shorter than the best one found so far, update the best path
+                    if ant.total_distance < best_distance:
+                        best_path = ant.path
+                        best_distance = ant.total_distance
+            self.update_pheromones(valid_ants)  # Update pheromones based on the ants' paths
             self.best_distance_history.append(best_distance)  # Save the best distance for each iteration
             #check if results are simular of the last iteration
             if len(self.best_distance_history) > 1 and self.best_distance_history[-1] == self.best_distance_history[-2]:
@@ -35,7 +41,7 @@ class AcoAlgo(AbstractAlgo):
                 print(f"Convergence atteinte après {iteration + 1} itérations.")
                 break
 
-        return best_path, best_distance
+        return best_path
 
     # Update the pheromones on the paths after all ants have completed their trips
     def update_pheromones(self, ants):
