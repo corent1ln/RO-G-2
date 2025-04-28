@@ -28,7 +28,7 @@ class AcoAlgo(AbstractAlgo):
                 if all(len(path) > 1 for path in ant.paths) and len(set(node for path in ant.paths for node in path)) == len(self.graph.nodes):
                     valid_ants.append(ant)
                     # If the current ant's path is shorter than the best one found so far, update the best path
-                    if ant.total_distance < best_distance and ant.:
+                    if ant.total_distance < best_distance: #todo add average and standard deviation
                         best_paths = ant.paths
                         best_distance = ant.total_distance
             self.update_pheromones(valid_ants)  # Update pheromones based on the ants' paths
