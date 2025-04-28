@@ -4,7 +4,7 @@ from Algorithms.AbstractAlgo import AbstractAlgo
 
 # ACO (Ant Colony Optimization) class runs the algorithm to find the best path
 class AcoAlgo(AbstractAlgo):
-    def __init__(self, graph, num_vehicles = 1,name = None, num_ants = 100, decay=0.5, alpha=1.0, beta=2.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
+    def __init__(self, graph,name = None, num_vehicles = 1, num_ants = 100, decay=0.5, alpha=1.0, beta=2.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
         super().__init__(graph, name, num_vehicles,min_iterations,max_iterations, convergence_threshold)
         self.num_ants = num_ants  # Number of ants in each iteration
         self.decay = decay  # Rate at which pheromones evaporate
