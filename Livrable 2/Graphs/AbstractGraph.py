@@ -17,6 +17,8 @@ class AbstractGraph(nx.Graph,ABC):
     def apply_edge_blocking(self,percentage = 20):
         if (percentage < 0):
             percentage = 0
+        if(percentage == 0):
+            return
         if (percentage > 100):
             percentage = 100
         if len(self.blocked_edges) > 0:
@@ -48,6 +50,8 @@ class AbstractGraph(nx.Graph,ABC):
     def apply_edge_costly(self, percentage =20, min_cost_factor = 2, max_cost_factor = 10):
         if (percentage < 0):
             percentage = 0
+        if (percentage == 0):
+            return
         if (percentage > 100):
             percentage = 100
 
