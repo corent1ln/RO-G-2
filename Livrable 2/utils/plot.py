@@ -51,11 +51,10 @@ class Plot: #todo optimize all
             for algo_idx, (algo_name, vehicles_paths) in enumerate(algorithms_paths.items()):
                 for vehicle, path in vehicles_paths.items():
                     if path:
-                        path_edges = list(zip(path, path[1:]))
-                        for u,v in path_edges:
-                            x_coords = [node_positions[u][0], node_positions[v][0]]
-                            y_coords = [node_positions[u][1], node_positions[v][1]]
-                            plt.plot(x_coords, y_coords, label=f"{algo_name}", color=Plot.get_color())
+                        path_coords = [node_positions[node] for node in path if node in node_positions]
+                        x_coords, y_coords = zip(*path_coords)
+                        plt.plot(x_coords, y_coords, label=f"{algo_name}", color=Plot.get_color(),linewidth=2)
+                           
 
         plt.legend()
         plt.title("Best path of graph" if algorithms_paths else "Graph")
