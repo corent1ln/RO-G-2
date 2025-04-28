@@ -1,12 +1,12 @@
-from utils.plot import Plot
 from abc import ABC, abstractmethod
 import uuid
 class AbstractAlgo(ABC):
-    def __init__(self,graph, name = None, min_iterations = 0,max_iterations = 100, convergence_threshold = 5):
+    def __init__(self,graph, name = None, num_vehicles = 1, min_iterations = 0,max_iterations = 100, convergence_threshold = 5):
         super().__init__()
         self.graph = graph
+        self.num_vehicles = num_vehicles
         self.distance = 0
-        self.path = []
+        self.paths = []
         self.distance_history = []
         self.iterations_needed = 0
         self.total_interations_realized = 0

@@ -10,7 +10,6 @@ class AbstractGraph(nx.Graph,ABC):
         self.id = uuid.uuid4()
         self.blocked_edges = []
         self.costly_edges = []
-
     @abstractmethod
     def plot_graph(self, best_paths): #todo add show_all_edge boolean
         pass
@@ -45,7 +44,6 @@ class AbstractGraph(nx.Graph,ABC):
                     num_edges_to_remove -= 1
 
         print(f"Removed {len(self.blocked_edges)} edges of {len(total_edges)}")
-
 
     def apply_edge_costly(self, percentage =20, min_cost_factor = 2, max_cost_factor = 10):
         if (percentage < 0):
