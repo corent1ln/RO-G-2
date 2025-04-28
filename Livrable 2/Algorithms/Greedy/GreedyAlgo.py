@@ -34,7 +34,9 @@ class GreedyAlgo(AbstractAlgo):
         for _ in range(len(self.graph.nodes) - 1):
             next_node = self.get_nearest_neighbour(current_node, visited)
             if(next_node is None):
-                break
+                path = None
+                total_distance = 0
+                return path, total_distance
             path.append(next_node)
             visited.append(next_node)
             total_distance += self.graph[current_node][next_node]['weight']

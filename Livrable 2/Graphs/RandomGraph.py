@@ -7,7 +7,6 @@ class RandomGraph(AbstractGraph):
         super().__init__()
         self.add_nodes_from(range(node_number))
         self.add_edges_from((u, v) for u in range(node_number) for v in range(u + 1, node_number)) 
-
         # random weight
         for u, v in self.edges():
             self[u][v]['weight'] = random.uniform(min_weight, max_weight)
@@ -21,9 +20,6 @@ class RandomGraph(AbstractGraph):
 
 
     def plot_graph(self, best_paths = None):
-        if isinstance(best_paths, dict):
-            Plot.plot_paths_comparison_graph(self, best_paths)
-        else:
               Plot.plot_graph(self, best_paths)
                 
         
