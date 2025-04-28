@@ -24,7 +24,8 @@ class Ant:
                 pheromone = self.aco.get_pheromone(current_node, neighbor)
                 distance = self.graph[current_node][neighbor]['weight']
                 # The more pheromones and the shorter the distance, the more likely the node will be chosen
-                probabilities[neighbor] = (pheromone ** 2) / distance
+                probability = (pheromone ** self.aco.alpha) * (1.0 / distance) ** self.aco.beta
+                probabilities[neighbor] = probability
         
         # Safeguard against division by zero
         total_prob = sum(probabilities.values())
@@ -68,7 +69,7 @@ class Ant:
     def complete_path(self):
         while self.unvisited_nodes:  # While there are still unvisited nodes
             if not self.move():
-                break  # If ant blocked
+                return False
         for i in range(self.aco.num_vehicles):
             if not self.unvisited_nodes:
                 if self.graph.has_edge(self.current_nodes[i], self.start_node):
@@ -76,3 +77,7 @@ class Ant:
                     self.total_distance += self.graph[self.current_nodes[i]][self.start_node]["weight"]
                     self.paths[i].append(self.start_node)  # Add the starting node to the end of the path
                     self.distances_per_vehicles[i]+= self.graph[self.current_nodes[i]][self.start_node]["weight"]
+                else:
+                    return False
+
+        return True
