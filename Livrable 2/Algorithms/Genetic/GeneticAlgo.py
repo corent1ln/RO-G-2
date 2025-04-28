@@ -1,5 +1,4 @@
 import random
-import numpy as np
 import networkx as nx
 from Algorithms.AbstractAlgo import AbstractAlgo
 
@@ -103,7 +102,6 @@ class GeneticAlgo(AbstractAlgo):
             # Create new solutions by combining the best solutions
             solutions = self.mutate(solutions)
 
-        paths = sorted(solutions, key=lambda s: self.get_total_distance(s))[0]
         self.paths = sorted(solutions, key=lambda s: self.get_total_distance(s))[0]
         self.distance = self.get_total_distance(self.paths)
         self.iterations_needed = -1 #TODO
