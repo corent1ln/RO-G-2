@@ -1,9 +1,9 @@
 from Algorithms.AbstractAlgo import AbstractAlgo
 import numpy as np
 
-class TabouAlgo(AbstractAlgo):
-    def __init__(self, graph, size_tabou = 50, name = None, min_iterations=0,max_iterations=100, convergence_threshold=5):
-        super().__init__(graph, name, min_iterations,max_iterations, convergence_threshold)
+class TabuAlgo(AbstractAlgo):
+    def __init__(self, graph, name = None, num_vehicles=1, size_tabou = 50, min_iterations=0,max_iterations=100, convergence_threshold=5):
+        super().__init__(graph, name, num_vehicles, min_iterations,max_iterations, convergence_threshold)
         self.size_tabou = size_tabou
         self.start_node = ''   
 
@@ -88,7 +88,6 @@ class TabouAlgo(AbstractAlgo):
 
         final_path = liste_tabou[-1]
         best_distance = self.calculate_distance(final_path)
-        
         return final_path, best_distance
 
 
@@ -117,7 +116,7 @@ class TabouAlgo(AbstractAlgo):
     
         self.total_interations_realized = iteration
         self.iterations_needed = iteration - similar_results_count
-        self.path = best_path
+        self.paths = [best_path]
         self.distance = best_distance
         self.distance_history = best_distance_history
 
