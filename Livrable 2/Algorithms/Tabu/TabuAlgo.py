@@ -1,5 +1,6 @@
 from Algorithms.AbstractAlgo import AbstractAlgo
 import numpy as np
+import time
 
 class TabuAlgo(AbstractAlgo):
     def __init__(self, graph, name = None, num_vehicles=1, size_tabou = 50, min_iterations=0,max_iterations=100, convergence_threshold=5):
@@ -40,11 +41,13 @@ class TabuAlgo(AbstractAlgo):
             else:
                 path = []
             i += 1
+
+            if  i > self.convergence_threshold:
+                break
         raise Exception("No valid path found after max iterations")
 
-
-    def calculate_distance(self, path):
-        total_distance = []
+    def get_distance_per_vehicule(self,path):
+        distance_per_vehicules = []
         for vehicle_path in path:
             vehicle_distance = 0
             for i in range(len(vehicle_path) - 1):
@@ -55,8 +58,12 @@ class TabuAlgo(AbstractAlgo):
                 else:
                     print(f"No edge between {u} and {v}")
                     return float('inf') 
-                total_distance.append(vehicle_distance)
-        return sum(total_distance)
+            distance_per_vehicules.append(vehicle_distance)
+        return distance_per_vehicules
+    
+    def calculate_distance(self, path):
+        distance_per_vehicules = self.get_distance_per_vehicule(path)
+        return sum(distance_per_vehicules)
     
     def generate_neighbors(self, current_solution):
         neighbors = [current_solution]
@@ -108,20 +115,29 @@ class TabuAlgo(AbstractAlgo):
             #print(f"Iteration {i+1}: Best Distance = {best_distance}")
 
         final_path = liste_tabou[-1]
-        best_distance = self.calculate_distance(final_path)
-        return final_path, best_distance
+        
+        return final_path
 
 
     def run(self):
-        best_path = None
+        start_time = time.time()
+        best_paths = []
         best_distance = np.inf
+        best_distance_average_per_vehicles = np.inf
+        best_distance_standard_deviation_per_vehicles = np.inf
+        best_distance_per_vehicles = []
         best_distance_history = []
         similar_results_count = 0
         for iteration in range(self.max_iterations):
-            path, total_distance = self.tabou()
-            if total_distance < best_distance:
+            paths = self.tabou()
+            total_distance = self.calculate_distance(paths)
+            distance_per_vehicules = self.get_distance_per_vehicule(paths)
+            if total_distance < best_distance and np.std(distance_per_vehicules) <= best_distance_standard_deviation_per_vehicles:
                 best_distance = total_distance
-                best_path = path
+                best_paths = paths
+                best_distance_per_vehicles = distance_per_vehicules
+                best_distance_average_per_vehicles = np.average(best_distance_per_vehicles)
+                best_distance_standard_deviation_per_vehicles = np.std(best_distance_per_vehicles)
 
             best_distance_history.append(best_distance)
 
@@ -136,10 +152,13 @@ class TabuAlgo(AbstractAlgo):
     
         self.total_interations_realized = iteration
         self.iterations_needed = iteration - similar_results_count
-        self.paths = best_path
+        self.paths = best_paths
         self.distance = best_distance
         self.distance_history = best_distance_history
-
+        self.distance_per_vehicles = best_distance_per_vehicles
+        self.distance_average_per_vehicles = best_distance_average_per_vehicles
+        self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
+        self.execution_time = time.time() - start_time
 
 
 

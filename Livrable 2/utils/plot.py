@@ -48,20 +48,13 @@ class Plot: #todo optimize all
             plt.plot(x_coords, y_coords, 'gray', linewidth=0.5)
 
         if algorithms_paths:
-            legend_added = {} 
             for algo_idx, (algo_name, vehicles_paths) in enumerate(algorithms_paths.items()):
-                algo_color = Plot.get_color()
                 for vehicle, path in vehicles_paths.items():
                     if path:
-                        path_edges = list(zip(path, path[1:]))
-                        for u,v in path_edges:
-                            x_coords = [node_positions[u][0], node_positions[v][0]]
-                            y_coords = [node_positions[u][1], node_positions[v][1]]
-                            if algo_name not in legend_added:
-                                plt.plot(x_coords, y_coords, label=f"{algo_name}", color=algo_color)  # Add label for this algorithm
-                                legend_added[algo_name] = True
-                            else:
-                                plt.plot(x_coords, y_coords, color=algo_color, linewidth=2)
+                        path_coords = [node_positions[node] for node in path if node in node_positions]
+                        x_coords, y_coords = zip(*path_coords)
+                        plt.plot(x_coords, y_coords, label=f"{algo_name}", color=Plot.get_color(),linewidth=2)
+                           
 
         plt.legend()
         plt.title("Best path of graph" if algorithms_paths else "Graph")
@@ -126,19 +119,12 @@ class Plot: #todo optimize all
 
         # Plot paths for each algorithm and vehicle
         if algorithms_paths:
-            legend_added = {} 
             for algo_idx, (algo_name, vehicles_paths) in enumerate(algorithms_paths.items()):
-                algo_color = Plot.get_color()
                 for vehicle, path in vehicles_paths.items():
                     if path:
                         path_coords = [city_to_coords[city] for city in path if city in city_to_coords]
                         x_coords, y_coords = zip(*path_coords)
-
-                        if algo_name not in legend_added:
-                            plt.plot(x_coords, y_coords, label=f"{algo_name}",color=algo_color, linewidth=2)
-                            legend_added[algo_name] = True  
-                        else:
-                            plt.plot(x_coords, y_coords,color=algo_color,linewidth=2)
+                        plt.plot(x_coords, y_coords, label=f"{algo_name}",color=Plot.get_color(), linewidth=2)
 
 
 

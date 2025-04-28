@@ -1,36 +1,46 @@
 import numpy as np
+import time
 from Algorithms.ACO.Ant import Ant
 from Algorithms.AbstractAlgo import AbstractAlgo
 
 # ACO (Ant Colony Optimization) class runs the algorithm to find the best path
 class AcoAlgo(AbstractAlgo):
-    def __init__(self, graph, num_vehicles = 1,name = None, num_ants = 100, decay=0.5, alpha=1.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
+    def __init__(self, graph,name = None, num_vehicles = 1, num_ants = 100, decay=0.5, alpha=1.0, beta=2.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
         super().__init__(graph, name, num_vehicles,min_iterations,max_iterations, convergence_threshold)
         self.num_ants = num_ants  # Number of ants in each iteration
         self.decay = decay  # Rate at which pheromones evaporate
         self.alpha = alpha  # Strength of pheromone update
+        self.beta = beta # Influence of distance in the probability calculation
         self.pheromones = {}
         self.initialize_pheromones(initial_value=1.0)
+        if self.num_vehicles > len(self.graph.nodes):
+            self.num_vehicles = len(self.graph.nodes)
     # Main function to run the ACO algorithm
     def run(self):
-        best_path = None
+        start_time = time.time()
+        best_paths = []
         best_distance = np.inf  # Start with a very large number for comparison
+        best_distance_average_per_vehicles = np.inf
+        best_distance_standard_deviation_per_vehicles = np.inf
         similar_results_count = 0
         best_distance_history = []
+        best_distance_per_vehicles = []
         # Run the algorithm for the specified number of iterations
-        for iteration in range(self.max_iterations):
+        for iteration in range(1,self.max_iterations +1):
             ants = [Ant(self.graph,self) for _ in range(self.num_ants)]  # Create a group of ants
             
             valid_ants = []
 
             for ant in ants:
-                ant.complete_path()  # Let each ant complete its path
-                if all(len(path) > 1 for path in ant.paths) and len(set(node for path in ant.paths for node in path)) == len(self.graph.nodes):
+                if(ant.complete_path()):  # Let each ant complete its path
                     valid_ants.append(ant)
                     # If the current ant's path is shorter than the best one found so far, update the best path
-                    if ant.total_distance < best_distance: #todo add average and standard deviation
+                    if ant.total_distance < best_distance and np.std(ant.distances_per_vehicles) <= best_distance_standard_deviation_per_vehicles: #todo add average and standard deviation
                         best_paths = ant.paths
                         best_distance = ant.total_distance
+                        best_distance_per_vehicles = ant.distances_per_vehicles
+                        best_distance_average_per_vehicles = np.average(best_distance_per_vehicles)
+                        best_distance_standard_deviation_per_vehicles = np.std(best_distance_per_vehicles)
             self.update_pheromones(valid_ants)  # Update pheromones based on the ants' paths
             best_distance_history.append(best_distance)  # Save the best distance for each iteration
             #check if results are simular of the last iteration
@@ -46,7 +56,10 @@ class AcoAlgo(AbstractAlgo):
         self.paths = best_paths
         self.distance = best_distance
         self.distance_history = best_distance_history
-
+        self.distance_per_vehicles = best_distance_per_vehicles
+        self.distance_average_per_vehicles = best_distance_average_per_vehicles
+        self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
+        self.execution_time = time.time() - start_time
     # Update the pheromones on the paths after all ants have completed their trips
     def update_pheromones(self, ants):
         for edge in self.pheromones:
