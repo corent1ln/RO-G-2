@@ -4,8 +4,8 @@ from Algorithms.AbstractAlgo import AbstractAlgo
 
 # ACO (Ant Colony Optimization) class runs the algorithm to find the best path
 class AcoAlgo(AbstractAlgo):
-    def __init__(self, graph, name = None, num_ants = 100, decay=0.5, alpha=1.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
-        super().__init__(graph, name, min_iterations,max_iterations, convergence_threshold)
+    def __init__(self, graph, num_vehicles = 1,name = None, num_ants = 100, decay=0.5, alpha=1.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
+        super().__init__(graph, name, num_vehicles,min_iterations,max_iterations, convergence_threshold)
         self.num_ants = num_ants  # Number of ants in each iteration
         self.decay = decay  # Rate at which pheromones evaporate
         self.alpha = alpha  # Strength of pheromone update
@@ -25,11 +25,11 @@ class AcoAlgo(AbstractAlgo):
 
             for ant in ants:
                 ant.complete_path()  # Let each ant complete its path
-                if len(ant.path) == len(self.graph.nodes) + 1:
+                if all(len(path) > 1 for path in ant.paths) and len(set(node for path in ant.paths for node in path)) == len(self.graph.nodes):
                     valid_ants.append(ant)
                     # If the current ant's path is shorter than the best one found so far, update the best path
-                    if ant.total_distance < best_distance:
-                        best_path = ant.path
+                    if ant.total_distance < best_distance and ant.:
+                        best_paths = ant.paths
                         best_distance = ant.total_distance
             self.update_pheromones(valid_ants)  # Update pheromones based on the ants' paths
             best_distance_history.append(best_distance)  # Save the best distance for each iteration
@@ -43,7 +43,7 @@ class AcoAlgo(AbstractAlgo):
                 break
         self.total_interations_realized = iteration
         self.iterations_needed = iteration - similar_results_count
-        self.path = best_path
+        self.paths = best_paths
         self.distance = best_distance
         self.distance_history = best_distance_history
 
@@ -53,12 +53,13 @@ class AcoAlgo(AbstractAlgo):
             self.pheromones[edge] *= self.decay  # Reduce pheromones on all paths (evaporation)
         # For each ant, increase pheromones on the paths they took, based on how good their path was
         for ant in ants:
-            for i in range(len(ant.path) - 1):
-                from_node = ant.path[i]
-                to_node = ant.path[i + 1]
-                edge = (from_node, to_node) if (from_node, to_node) in self.pheromones else (to_node, from_node)
-                # Update the pheromones inversely proportional to the total distance traveled by the ant
-                self.pheromones[edge] += self.alpha / ant.total_distance
+            for vehicle in range(self.num_vehicles):
+                for i in range(len(ant.paths[vehicle]) - 1):
+                    from_node = ant.paths[vehicle][i]
+                    to_node = ant.paths[vehicle][i + 1]
+                    edge = (from_node, to_node) if (from_node, to_node) in self.pheromones else (to_node, from_node)
+                    # Update the pheromones inversely proportional to the total distance traveled by the ant
+                    self.pheromones[edge] += self.alpha / ant.total_distance
 
     def initialize_pheromones(self, initial_value=1.0):
         for edge in self.graph.edges:
