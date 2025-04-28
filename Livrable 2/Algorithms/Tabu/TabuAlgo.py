@@ -5,6 +5,9 @@ class TabuAlgo(AbstractAlgo):
     def __init__(self, graph, name = None, num_vehicles=1, size_tabou = 50, min_iterations=0,max_iterations=100, convergence_threshold=5):
         super().__init__(graph, name, num_vehicles, min_iterations,max_iterations, convergence_threshold)
         self.size_tabou = size_tabou
+        if len(self.graph.nodes) < self.num_vehicles:
+            self.num_vehicles = len(self.graph.nodes)-1
+            print("ok")
         self.start_node = ''  
 
     def path_exists(self, path):
@@ -32,7 +35,7 @@ class TabuAlgo(AbstractAlgo):
                 nodes.append(self.start_node)
                 path.append(nodes)
             if self.path_exists(path):
-                print(path)
+                #print(path)
                 return path
             else:
                 path = []
@@ -74,18 +77,16 @@ class TabuAlgo(AbstractAlgo):
 
     def tabou(self):
         current_sol = self.random_path()
-        print("current",current_sol)
+        #print("current",current_sol)
         neighbors = self.generate_all_neighbors(current_sol)
-        for _ in neighbors:
-            print("voisins :", _)
         best_solution = []
         for neighbor in neighbors:
-            print("neighbor :", neighbor)
+            #print("neighbor :", neighbor)
             sorted_neighbor = sorted(neighbor, key=lambda x: self.calculate_distance([x]))
             best_solution.append(sorted_neighbor[0])
         best_distance = self.calculate_distance(best_solution)
         liste_tabou = [best_solution]
-        print("liste tabou :", best_solution)
+        #print("liste tabou :", best_solution)
         for i in range (self.max_iterations):
             current_solution = self.random_path()
             best_neighbor = []
