@@ -6,6 +6,7 @@ class AbstractAlgo(ABC):
         self.graph = graph
         self.num_vehicles = num_vehicles
         self.distance = 0
+        self.distance_per_vehicles = {}
         self.paths = []
         self.distance_history = []
         self.iterations_needed = 0

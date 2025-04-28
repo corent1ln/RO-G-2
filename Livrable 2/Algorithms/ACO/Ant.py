@@ -13,23 +13,7 @@ class Ant:
         self.unvisited_nodes.remove(self.start_node) # remove the initial node because the ant start on it
 
     def select_vehicle(self):
-        vehicle_scores = []
-        for v in range(self.aco.num_vehicles):
-            # Calculer la distance totale parcourue par le véhicule
-            if len(self.paths[v]) > 1:
-                distance = sum(
-                    self.graph[self.paths[v][i - 1]][self.paths[v][i]]['weight']
-                    for i in range(1, len(self.paths[v]))
-                )
-            else:
-                distance = 0
-            
-            # Ajouter un facteur basé sur le nombre de nœuds visités
-            score = distance + len(self.paths[v]) * 10  # Ajustez le facteur multiplicatif si nécessaire
-            vehicle_scores.append(score)
-        
-        # Retourner l'indice du véhicule avec le score le plus bas
-        return np.argmin(vehicle_scores)
+        return np.random.randint(0, self.aco.num_vehicles)
     # Select the next node for the ant to travel to, based on pheromones and distances
     def select_next_node(self,current_node):
         # Initialize an array to store the probability for each node
@@ -75,6 +59,7 @@ class Ant:
         self.paths[vehicle].append(next_node)  # Add it to the path
         # Add the distance between the current node and the next node to the total distance
         self.total_distance += self.graph[self.current_nodes[vehicle]][next_node]["weight"]
+        self.distances_per_vehicles[vehicle]+= self.graph[self.current_nodes[vehicle]][next_node]["weight"]
         self.current_nodes[vehicle] = next_node  # Update the current node to the next node
         self.unvisited_nodes.remove(next_node)  # Mark the next node as visited
         return True
@@ -90,3 +75,4 @@ class Ant:
                     # After visiting all nodes, return to the starting node to complete the cycle
                     self.total_distance += self.graph[self.current_nodes[i]][self.start_node]["weight"]
                     self.paths[i].append(self.start_node)  # Add the starting node to the end of the path
+                    self.distances_per_vehicles[i]+= self.graph[self.current_nodes[i]][self.start_node]["weight"]
