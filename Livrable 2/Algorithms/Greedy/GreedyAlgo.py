@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from Algorithms.AbstractAlgo import AbstractAlgo
 
 class GreedyAlgo(AbstractAlgo):
@@ -79,6 +80,7 @@ class GreedyAlgo(AbstractAlgo):
                     self.distances_per_vehicles[i]+= self.graph[self.current_nodes[i]][self.start_node]["weight"]
     
     def run(self):
+        start_time = time.time()
         best_paths = []
         best_distance = np.inf  # Start with a very large number for comparison
         best_distance_history = []
@@ -108,7 +110,6 @@ class GreedyAlgo(AbstractAlgo):
             if similar_results_count >= self.convergence_threshold and iteration > self.min_iterations:
                 break
 
-    
         self.total_interations_realized = iteration
         self.iterations_needed = iteration - similar_results_count
         self.paths = best_paths
@@ -117,3 +118,4 @@ class GreedyAlgo(AbstractAlgo):
         self.distance_per_vehicles = best_distance_per_vehicles
         self.distance_average_per_vehicles = best_distance_average_per_vehicles
         self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
+        self.execution_time = time.time() - start_time

@@ -14,6 +14,7 @@ class AbstractAlgo(ABC):
         self.min_iterations = min_iterations
         self.max_iterations = max_iterations # max iterations if the algorithm don't find a solution
         self.convergence_threshold = convergence_threshold # threshold to stop iterations if results are similar
+        self.execution_time = 0
         if name:
             self.name = name
         else:

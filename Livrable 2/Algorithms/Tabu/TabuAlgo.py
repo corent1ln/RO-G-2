@@ -1,5 +1,6 @@
 from Algorithms.AbstractAlgo import AbstractAlgo
 import numpy as np
+import time
 
 class TabuAlgo(AbstractAlgo):
     def __init__(self, graph, name = None, num_vehicles=1, size_tabou = 50, min_iterations=0,max_iterations=100, convergence_threshold=5):
@@ -119,6 +120,7 @@ class TabuAlgo(AbstractAlgo):
 
 
     def run(self):
+        start_time = time.time()
         best_paths = []
         best_distance = np.inf
         best_distance_average_per_vehicles = np.inf
@@ -156,7 +158,7 @@ class TabuAlgo(AbstractAlgo):
         self.distance_per_vehicles = best_distance_per_vehicles
         self.distance_average_per_vehicles = best_distance_average_per_vehicles
         self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
-
+        self.execution_time = time.time() - start_time
 
 
 

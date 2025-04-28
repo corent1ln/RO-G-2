@@ -1,4 +1,5 @@
 import numpy as np
+import time
 from Algorithms.ACO.Ant import Ant
 from Algorithms.AbstractAlgo import AbstractAlgo
 
@@ -16,6 +17,7 @@ class AcoAlgo(AbstractAlgo):
             self.num_vehicles = len(self.graph.nodes)
     # Main function to run the ACO algorithm
     def run(self):
+        start_time = time.time()
         best_paths = []
         best_distance = np.inf  # Start with a very large number for comparison
         best_distance_average_per_vehicles = np.inf
@@ -57,7 +59,7 @@ class AcoAlgo(AbstractAlgo):
         self.distance_per_vehicles = best_distance_per_vehicles
         self.distance_average_per_vehicles = best_distance_average_per_vehicles
         self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
-
+        self.execution_time = time.time() - start_time
     # Update the pheromones on the paths after all ants have completed their trips
     def update_pheromones(self, ants):
         for edge in self.pheromones:
