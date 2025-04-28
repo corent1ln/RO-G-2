@@ -23,7 +23,7 @@ class AcoAlgo(AbstractAlgo):
         best_distance_history = []
         best_distance_per_vehicles = []
         # Run the algorithm for the specified number of iterations
-        for iteration in range(self.max_iterations):
+        for iteration in range(1,self.max_iterations +1):
             ants = [Ant(self.graph,self) for _ in range(self.num_ants)]  # Create a group of ants
             
             valid_ants = []
@@ -33,7 +33,7 @@ class AcoAlgo(AbstractAlgo):
                 if all(len(path) > 1 for path in ant.paths) and len(set(node for path in ant.paths for node in path)) == len(self.graph.nodes):
                     valid_ants.append(ant)
                     # If the current ant's path is shorter than the best one found so far, update the best path
-                    if ant.total_distance <= best_distance and np.std(ant.distances_per_vehicles) <= best_distance_standard_deviation_per_vehicles: #todo add average and standard deviation
+                    if ant.total_distance < best_distance and np.std(ant.distances_per_vehicles) <= best_distance_standard_deviation_per_vehicles: #todo add average and standard deviation
                         best_paths = ant.paths
                         best_distance = ant.total_distance
                         best_distance_per_vehicles = ant.distances_per_vehicles
