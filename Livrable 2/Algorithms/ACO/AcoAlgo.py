@@ -4,11 +4,12 @@ from Algorithms.AbstractAlgo import AbstractAlgo
 
 # ACO (Ant Colony Optimization) class runs the algorithm to find the best path
 class AcoAlgo(AbstractAlgo):
-    def __init__(self, graph, num_vehicles = 1,name = None, num_ants = 100, decay=0.5, alpha=1.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
+    def __init__(self, graph, num_vehicles = 1,name = None, num_ants = 100, decay=0.5, alpha=1.0, beta=2.0, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
         super().__init__(graph, name, num_vehicles,min_iterations,max_iterations, convergence_threshold)
         self.num_ants = num_ants  # Number of ants in each iteration
         self.decay = decay  # Rate at which pheromones evaporate
         self.alpha = alpha  # Strength of pheromone update
+        self.beta = beta # Influence of distance in the probability calculation
         self.pheromones = {}
         self.initialize_pheromones(initial_value=1.0)
         if self.num_vehicles > len(self.graph.nodes):
@@ -29,8 +30,7 @@ class AcoAlgo(AbstractAlgo):
             valid_ants = []
 
             for ant in ants:
-                ant.complete_path()  # Let each ant complete its path
-                if all(len(path) > 1 for path in ant.paths) and len(set(node for path in ant.paths for node in path)) == len(self.graph.nodes):
+                if(ant.complete_path()):  # Let each ant complete its path
                     valid_ants.append(ant)
                     # If the current ant's path is shorter than the best one found so far, update the best path
                     if ant.total_distance < best_distance and np.std(ant.distances_per_vehicles) <= best_distance_standard_deviation_per_vehicles: #todo add average and standard deviation

@@ -2,15 +2,37 @@ import numpy as np
 from Algorithms.AbstractAlgo import AbstractAlgo
 
 class GreedyAlgo(AbstractAlgo):
-    def __init__(self, graph, name = None, min_iterations=0,max_iterations=100, convergence_threshold=5):
-        super().__init__(graph, name, min_iterations,max_iterations, convergence_threshold)
+    def __init__(self, graph, name = None, num_vehicles = 1, min_iterations=0,max_iterations=100, convergence_threshold=5):
+        super().__init__(graph, name, num_vehicles, min_iterations,max_iterations, convergence_threshold)
+        self.start_node = list(self.graph.nodes)[0]
+        self.current_nodes = [self.start_node for _ in range(self.num_vehicles)]
+        self.paths = [[self.start_node] for _ in range(self.num_vehicles)]
+        self.distances_per_vehicles = [0 for _ in range(self.num_vehicles)]
+        self.unvisited_nodes = list(self.graph.nodes).copy()
+        self.unvisited_nodes.remove(self.start_node)
+        self.current_vehicle = 0
+        if self.num_vehicles > len(self.graph.nodes):
+            self.num_vehicles = len(self.graph.nodes)
     
-    def get_nearest_neighbour(self, current_node, visited):
+    def reset(self):
+        self.start_node = list(self.graph.nodes)[0]
+        self.current_nodes = [self.start_node for _ in range(self.num_vehicles)]
+        self.paths = [[self.start_node] for _ in range(self.num_vehicles)]
+        self.distances_per_vehicles = [0 for _ in range(self.num_vehicles)]
+        self.total_distance = 0
+        self.unvisited_nodes = list(self.graph.nodes).copy()
+        self.unvisited_nodes.remove(self.start_node)
+
+
+    def select_vehicle(self):
+        return (self.current_vehicle + 1) % self.num_vehicles
+
+    def get_nearest_neighbour(self, current_node):
         neighbours = []
 
         #find all neighbors not visited
         for n in self.graph.neighbors(current_node):
-            if n not in visited:
+            if n in self.unvisited_nodes:
                 neighbours.append(n)
 
         nearest = None 
@@ -25,40 +47,56 @@ class GreedyAlgo(AbstractAlgo):
 
         return nearest
     
+    def move(self):
+        current_node = self.current_nodes[self.current_vehicle]
+        next_node = self.get_nearest_neighbour(current_node)
+        if next_node is None:
+            return False
+
+        self.paths[self.current_vehicle].append(next_node)  # Add it to the path
+        # Add the distance between the current node and the next node to the total distance
+        self.total_distance += self.graph[self.current_nodes[self.current_vehicle]][next_node]["weight"]
+        self.distances_per_vehicles[self.current_vehicle]+= self.graph[self.current_nodes[self.current_vehicle]][next_node]["weight"]
+        self.current_nodes[self.current_vehicle] = next_node  # Update the current node to the next node
+        self.unvisited_nodes.remove(next_node)  # Mark the next node as visited
+
+        self.current_vehicle = self.select_vehicle()
+        return True
+
     def greedy(self):
-        current_node = list(self.graph.nodes)[0]
-        visited = [current_node]
-        path = [current_node]
-        total_distance = 0
-        
-        for _ in range(len(self.graph.nodes) - 1):
-            next_node = self.get_nearest_neighbour(current_node, visited)
-            if(next_node is None):
-                path = None
-                total_distance = 0
-                return path, total_distance
-            path.append(next_node)
-            visited.append(next_node)
-            total_distance += self.graph[current_node][next_node]['weight']
-            current_node = next_node
-        
-        if self.graph.has_edge(current_node, path[0]):
-                path.append(path[0])
-                total_distance += self.graph[current_node][path[0]]['weight']
-        
-        return path, total_distance
+        while self.unvisited_nodes: 
+            if not self.move():
+                self.paths = []
+                self.total_distance = float('inf')
+                self.distances_per_vehicles = [float('inf') for _ in range(self.num_vehicles)]
+                break
+        for i in range(self.num_vehicles):
+            if not self.unvisited_nodes:
+                if self.graph.has_edge(self.current_nodes[i], self.start_node):
+                    # After visiting all nodes, return to the starting node to complete the cycle
+                    self.total_distance += self.graph[self.current_nodes[i]][self.start_node]["weight"]
+                    self.paths[i].append(self.start_node)  # Add the starting node to the end of the path
+                    self.distances_per_vehicles[i]+= self.graph[self.current_nodes[i]][self.start_node]["weight"]
     
     def run(self):
-        best_path = None
-        best_distance = np.inf
+        best_paths = []
+        best_distance = np.inf  # Start with a very large number for comparison
         best_distance_history = []
         similar_results_count = 0
+        best_distance_average_per_vehicles = np.inf
+        best_distance_standard_deviation_per_vehicles = np.inf
 
-        for iteration in range(self.max_iterations):
-            path, total_distance = self.greedy()
-            if total_distance < best_distance:
-                best_distance = total_distance
-                best_path = path
+
+        best_distance_per_vehicles = []
+        for iteration in range(1,self.max_iterations + 1):
+            self.reset()
+            self.greedy()
+            if self.total_distance < best_distance and np.std(self.distances_per_vehicles) <= best_distance_standard_deviation_per_vehicles: #todo add average and standard deviation
+                best_paths = self.paths
+                best_distance = self.total_distance
+                best_distance_per_vehicles = self.distances_per_vehicles
+                best_distance_average_per_vehicles = np.average(best_distance_per_vehicles)
+                best_distance_standard_deviation_per_vehicles = np.std(best_distance_per_vehicles)
 
             best_distance_history.append(best_distance)
 
@@ -73,6 +111,9 @@ class GreedyAlgo(AbstractAlgo):
     
         self.total_interations_realized = iteration
         self.iterations_needed = iteration - similar_results_count
-        self.path = best_path
+        self.paths = best_paths
         self.distance = best_distance
         self.distance_history = best_distance_history
+        self.distance_per_vehicles = best_distance_per_vehicles
+        self.distance_average_per_vehicles = best_distance_average_per_vehicles
+        self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
