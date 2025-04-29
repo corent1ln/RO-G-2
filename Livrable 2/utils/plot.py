@@ -142,3 +142,14 @@ class Plot: #todo optimize all
         plt.ylabel("Distance")
         plt.legend()
         plt.show()
+
+    def plot_time_over_iterations_comparison(algorithms_results,step):
+        for algo_name, execution_time in algorithms_results.items():
+            iterations = range(step, step * len(execution_time) + 1, step)
+            plt.plot(iterations,execution_time, label=algo_name, linewidth=2)
+
+        plt.title("Comparison of execution time over iterations")
+        plt.xlabel("Iteration")
+        plt.ylabel("Time (in s)")
+        plt.legend()
+        plt.show()
