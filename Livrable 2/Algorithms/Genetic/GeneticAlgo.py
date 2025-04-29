@@ -65,6 +65,7 @@ class GeneticAlgo(AbstractAlgo):
         return solution
     
     def run(self):
+        best_distance = float('inf')
         start_time = time.time()
         # Run the genetic algorithm
         # Generate a random solution
@@ -90,7 +91,11 @@ class GeneticAlgo(AbstractAlgo):
             scores = [distances[i] + standard_deviations[i] for i in range(len(distances))]
             sorted_indices = np.argsort(scores)
             solutions = [solutions[i] for i in sorted_indices[:len(solutions) // 2]] #get half (the betters)
-            self.distance_history.append(distances[sorted_indices[0]])
+            
+            current_best_distance = distances[sorted_indices[0]]
+            if current_best_distance < best_distance:
+                best_distance = current_best_distance
+            self.distance_history.append(best_distance)
             if len(self.distance_history) > 1 and self.distance_history[-1] == self.distance_history[-2]:
                 similar_results_count += 1
             else:
