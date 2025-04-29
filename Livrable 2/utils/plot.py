@@ -176,3 +176,59 @@ class Plot: #todo optimize all
         plt.ylabel("Temps d'exécution (s)")
         plt.grid(True)
         plt.show()
+
+    @staticmethod
+    def plot_time_vs_node_count(node_counts, times):
+        """
+        Affiche un graphe du temps d'exécution en fonction du nombre de sommets.
+
+        :param node_counts: Liste du nombre de sommets testés
+        :param times: Liste des temps d'exécution correspondants
+        """
+        plt.figure(figsize=(10, 6))
+        plt.plot(node_counts, times, marker='o', linestyle='-', color='teal')
+        plt.title("Temps d'exécution vs Nombre de sommets (GeneticAlgo)")
+        plt.xlabel("Nombre de sommets")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_time_vs_vehicle_count(vehicle_counts, times):
+        plt.figure(figsize=(10, 6))
+        plt.plot(vehicle_counts, times, marker='o', linestyle='-', color='purple')
+        plt.title("Temps d'exécution vs Nombre de véhicules (GeneticAlgo)")
+        plt.xlabel("Nombre de véhicules")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_time_vs_parallel_solutions(parallel_counts, times):
+        plt.figure(figsize=(10, 6))
+        plt.plot(parallel_counts, times, marker='o', linestyle='-', color='darkorange')
+        plt.title("Temps d'exécution vs Nombre de solutions parallèles (GeneticAlgo)")
+        plt.xlabel("Nombre de solutions parallèles")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_distance_vs_mutation_rate(mutation_rates, distances):
+        """
+        Plots the distance vs mutation rate graph.
+
+        :param mutation_rates: List of mutation rates tested
+        :param distances: List of corresponding distances
+        """
+        plt.figure(figsize=(10, 6))
+        plt.plot(mutation_rates, distances, marker='o', linestyle='-', color='blue')
+        plt.title("Distance vs Mutation Rate (GeneticAlgo)")
+        plt.xlabel("Mutation Rate")
+        plt.ylabel("Distance")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
