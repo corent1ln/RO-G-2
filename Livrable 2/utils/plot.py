@@ -143,6 +143,15 @@ class Plot: #todo optimize all
         plt.legend()
         plt.show()
 
+    @staticmethod
+    def plot_iterations_over_node_sizes(algorithms_results):
+            plt.plot(algorithms_results, linewidth=2)
+            plt.title("Comparison of total iterations over node size")
+            plt.xlabel("Node size")
+            plt.ylabel("Iteration")
+            plt.legend()
+            plt.show()
+
     def plot_time_over_iterations_comparison(algorithms_results,step):
         for algo_name, execution_time in algorithms_results.items():
             iterations = range(step, step * len(execution_time) + 1, step)
@@ -152,4 +161,17 @@ class Plot: #todo optimize all
         plt.xlabel("Iteration")
         plt.ylabel("Time (in s)")
         plt.legend()
+        plt.show()
+
+    def plot_average_algorithms_distances(algorithms_results):
+        for algo_name, stats in algorithms_results.items():
+            plt.plot(stats["best"], label=f"{algo_name} - Best", linestyle='--', linewidth=2)
+            plt.plot(stats["worst"], label=f"{algo_name} - Worst", linestyle=':', linewidth=2)
+            plt.plot(stats["average"], label=f"{algo_name} - Average", linewidth=2)
+
+        plt.title("Algorithm Reliability: Best, Worst, and Average Distances")
+        plt.xlabel("Iterations")
+        plt.ylabel("Distance")
+        plt.legend()
+        plt.grid()
         plt.show()
