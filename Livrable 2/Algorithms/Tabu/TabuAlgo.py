@@ -22,29 +22,64 @@ class TabuAlgo(AbstractAlgo):
         return True
 
     def random_path(self):
+        full_node = list(self.graph.nodes())
+        self.start_node = full_node[0]
+        nb_res = self.num_vehicles * len(full_node)
+
+        # Initialiser chaque camion à partir du nœud de départ
+        initial_paths = [[self.start_node] for _ in range(self.num_vehicles)]
+        res = [initial_paths]  # Liste de solutions, chaque solution = liste de chemins
+
         i = 0
-        while i < self.max_iterations:
-            full_node = list(self.graph.nodes()) # get random path
-            self.start_node = full_node[0]
-            full_node.remove(self.start_node)
+        while i < len(full_node) * 2:
+            temp_res = []
+            for vehicles_paths in res:
+                for v_idx, vehicle_path in enumerate(vehicles_paths):
+                    last_node = vehicle_path[-1]
+                    neighbors = list(self.graph.neighbors(last_node))
 
-            np.random.shuffle(full_node) 
-            nodes_split = [full_node[i::self.num_vehicles] for i in range(self.num_vehicles)] # Split the path according to the number of vehicles
-            path = [] # final path
-            for nodes in nodes_split:
-                nodes.insert(0, self.start_node)
-                nodes.append(self.start_node)
-                path.append(nodes)
-            if self.path_exists(path):
-                #print(path)
-                return path
+                    # noeud déjà visités
+                    used_nodes = set(n for path in vehicles_paths for n in path)
+                    new_neighbors = [n for n in neighbors if n not in used_nodes]
+                    np.random.shuffle(new_neighbors)
+
+                    for new_neighbor in new_neighbors:
+                        new_vehicle_paths = [list(path) for path in vehicles_paths]
+                        new_vehicle_paths[v_idx].append(new_neighbor)
+                        temp_res.append(new_vehicle_paths)
+
+            # Rédui le nombre de solutions
+            if len(temp_res) > nb_res:
+                np.random.shuffle(temp_res)
+                res = temp_res[:nb_res]
             else:
-                path = []
-            i += 1
+                res = temp_res
 
-            if  i > self.convergence_threshold:
-                break
-        raise Exception("No valid path found after max iterations")
+            # Vérifi si tous les noeuds sont visités
+            for vehicles_paths in res:
+                all_visited = set(n for path in vehicles_paths for n in path)
+                if len(all_visited) == len(full_node):
+                    final_paths = []
+                    valid = True
+                    for path in vehicles_paths:
+                        last_node = path[-1]
+                        if self.start_node in self.graph.neighbors(last_node):
+                            new_path = path + [self.start_node]
+                            final_paths.append(new_path)
+                        else:
+                            valid = False
+                            break
+
+                    if not valid:
+                        continue
+
+                    if any(len(p) == 2 for p in final_paths):
+                        continue
+
+                    return final_paths
+
+            i += 1
+        return []
 
     def get_distance_per_vehicule(self,path):
         distance_per_vehicules = []
@@ -159,7 +194,3 @@ class TabuAlgo(AbstractAlgo):
         self.distance_average_per_vehicles = best_distance_average_per_vehicles
         self.distance_standard_deviation_per_vehicles = best_distance_standard_deviation_per_vehicles
         self.execution_time = time.time() - start_time
-
-
-
-
