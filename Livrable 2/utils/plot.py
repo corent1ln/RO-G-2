@@ -143,6 +143,7 @@ class Plot: #todo optimize all
         plt.legend()
         plt.show()
 
+    @staticmethod
     def plot_time_over_iterations_comparison(algorithms_results,step):
         for algo_name, execution_time in algorithms_results.items():
             iterations = range(step, step * len(execution_time) + 1, step)
@@ -154,6 +155,15 @@ class Plot: #todo optimize all
         plt.legend()
         plt.show()
 
+    @staticmethod
+    def plot_num_ants_vs_execution_time(num_ants_values, execution_times):
+        import matplotlib.pyplot as plt
+        plt.plot(num_ants_values, execution_times, marker='o')
+        plt.xlabel("Number of Ants")
+        plt.ylabel("Execution Time (seconds)")
+        plt.title("Execution Time over Number of Ants")
+        plt.grid()
+        plt.show()
 
     @staticmethod
     def plot_iterations_over_node_sizes(algorithms_results):
@@ -163,6 +173,15 @@ class Plot: #todo optimize all
             plt.ylabel("Iteration")
             plt.legend()
             plt.show()
+
+    @staticmethod
+    def plot_num_ants_vs_distance(num_ants_values, distances):
+        plt.plot(num_ants_values, distances, marker='o')
+        plt.xlabel("Number of Ants")
+        plt.ylabel("Distance")
+        plt.title("Distance vs Number of Ants")
+        plt.grid()
+        plt.show()
 
 
     @staticmethod
@@ -175,4 +194,28 @@ class Plot: #todo optimize all
         plt.xlabel("% d'arêtes bloquées")
         plt.ylabel("Temps d'exécution (s)")
         plt.grid(True)
+        plt.show()
+
+    @staticmethod
+    def plot_execution_time_vs_nodes(node_counts, results):
+        import matplotlib.pyplot as plt
+        for num_ants, times in results.items():
+            plt.plot(node_counts, times, marker='o', label=f"{num_ants} Ants")
+        plt.xlabel("Number of City")
+        plt.ylabel("Execution Time (seconds)")
+        plt.title("Execution Time over Number of Nodes")
+        plt.legend()
+        plt.grid()
+        plt.show()
+
+    @staticmethod
+    def plot_distance_vs_nodes(node_counts, results):
+        import matplotlib.pyplot as plt
+        for num_ants, distances in results.items():
+            plt.plot(node_counts, distances, marker='o', label=f"{num_ants} Ants")
+        plt.xlabel("Number of Nodes")
+        plt.ylabel("Distance Found")
+        plt.title("Distance Found vs Number of Nodes")
+        plt.legend()
+        plt.grid()
         plt.show()

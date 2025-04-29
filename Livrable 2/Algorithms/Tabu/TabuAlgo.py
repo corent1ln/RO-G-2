@@ -23,7 +23,7 @@ class TabuAlgo(AbstractAlgo):
 
     def random_path(self):
         i = 0
-        while i < self.max_iterations:
+        while i <(self.max_iterations * 100):
             full_node = list(self.graph.nodes()) # get random path
             self.start_node = full_node[0]
             full_node.remove(self.start_node)
@@ -36,7 +36,6 @@ class TabuAlgo(AbstractAlgo):
                 nodes.append(self.start_node)
                 path.append(nodes)
             if self.path_exists(path):
-                #print(path)
                 return path
             else:
                 path = []
@@ -44,7 +43,8 @@ class TabuAlgo(AbstractAlgo):
 
             if  i > self.convergence_threshold:
                 break
-        raise Exception("No valid path found after max iterations")
+        print("No valid path found after max iterations")
+        return None
 
     def get_distance_per_vehicule(self,path):
         distance_per_vehicules = []
@@ -84,6 +84,8 @@ class TabuAlgo(AbstractAlgo):
 
     def tabou(self):
         current_sol = self.random_path()
+        if current_sol is None:
+            return None
         #print("current",current_sol)
         neighbors = self.generate_all_neighbors(current_sol)
         best_solution = []
@@ -130,6 +132,10 @@ class TabuAlgo(AbstractAlgo):
         similar_results_count = 0
         for iteration in range(self.max_iterations):
             paths = self.tabou()
+            if paths is None:
+                self.distance = np.inf
+                self.paths = [[] for _ in range(self.num_vehicles)]
+                break
             total_distance = self.calculate_distance(paths)
             distance_per_vehicules = self.get_distance_per_vehicule(paths)
             if total_distance < best_distance and np.std(distance_per_vehicules) <= best_distance_standard_deviation_per_vehicles:

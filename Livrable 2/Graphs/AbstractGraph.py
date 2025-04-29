@@ -45,8 +45,6 @@ class AbstractGraph(nx.Graph,ABC):
                     self.blocked_edges.append((u, v,data))
                     num_edges_to_remove -= 1
 
-        print(f"Removed {len(self.blocked_edges)} edges of {len(total_edges)}")
-
     def apply_edge_costly(self, percentage =20, min_cost_factor = 2, max_cost_factor = 10):
         if (percentage < 0):
             percentage = 0
@@ -80,6 +78,3 @@ class AbstractGraph(nx.Graph,ABC):
             self.costly_edges.append((u, v,data))
             self.edges[(u,v)]["weight"] *= factor
             num_edge_to_cost -= 1
-
-
-        print(f"Costed {len(self.costly_edges)} edges of {len(total_edges)}")
