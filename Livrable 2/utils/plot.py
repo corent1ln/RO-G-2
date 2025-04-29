@@ -153,3 +153,26 @@ class Plot: #todo optimize all
         plt.ylabel("Time (in s)")
         plt.legend()
         plt.show()
+
+
+    @staticmethod
+    def plot_iterations_over_node_sizes(algorithms_results):
+            plt.plot(algorithms_results, linewidth=2)
+            plt.title("Comparison of total iterations over node size")
+            plt.xlabel("Node size")
+            plt.ylabel("Iteration")
+            plt.legend()
+            plt.show()
+
+
+    @staticmethod
+    def plot_time_vs_blocked_edges(blocked_percentages, times):
+        import matplotlib.pyplot as plt
+
+        plt.figure()
+        plt.plot(blocked_percentages, times, marker='o')
+        plt.title("Temps d'exécution vs % d'arêtes bloquées")
+        plt.xlabel("% d'arêtes bloquées")
+        plt.ylabel("Temps d'exécution (s)")
+        plt.grid(True)
+        plt.show()
