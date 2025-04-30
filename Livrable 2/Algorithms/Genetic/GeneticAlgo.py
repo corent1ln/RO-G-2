@@ -1,7 +1,10 @@
 import random
 import time
 import numpy as np
+import networkx as nx
 from Algorithms.AbstractAlgo import AbstractAlgo
+from functools import lru_cache
+
 
 class GeneticAlgo(AbstractAlgo):
     def __init__(self, graph, name=None, num_vehicles=5, solutions_in_parallel=10, min_iterations=0, max_iterations=100, convergence_threshold=5, mutation_rate=0.1):
@@ -28,10 +31,21 @@ class GeneticAlgo(AbstractAlgo):
             solutions.append(full_solution)
         return solutions
 
+    @lru_cache(maxsize=None)
+    def get_shortest_path_length(self, source, target):
+        # Calcule le chemin le plus court entre deux noeuds
+        # Vérifie si une arête directe existe entre source et target
+        if self.graph.has_edge(source, target):
+            return self.graph[source][target]["weight"]
+        # Sinon, calcule le chemin le plus court
+        path = nx.shortest_path(self.graph, source=source, target=target, weight="weight")
+        length = nx.path_weight(self.graph, path, weight="weight")
+        return length
+
     def evaluate_solution(self, solution):
         # Évalue une solution en calculant les distances totales et l'écart-type
         vehicle_distances = [
-            sum(self.graph[route[i]][route[i + 1]]["weight"] for i in range(len(route) - 1))
+            sum(self.get_shortest_path_length(route[i], route[i+1]) for i in range(len(route) - 1))
             for route in solution
         ]
         total = sum(vehicle_distances)  # Distance totale

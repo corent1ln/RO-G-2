@@ -232,3 +232,15 @@ class Plot: #todo optimize all
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+
+    @staticmethod
+    def plot_time_vs_blocked_edges(percentages, times):
+        plt.figure(figsize=(10, 6))
+        plt.plot(percentages, times, marker='o', linestyle='-', color='teal')
+        plt.title("Temps d'exécution vs Pourcentage d'arêtes bloquées")
+        plt.xlabel("Pourcentage d'arêtes bloquées")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
