@@ -80,6 +80,5 @@ class AcoAlgo(AbstractAlgo):
 
     def get_pheromone(self, u, v):
         return self.pheromones.get((u, v), self.pheromones.get((v, u), 0))
-    
 
     

@@ -24,6 +24,8 @@ class GeneticAlgo(AbstractAlgo):
                     if len(nodes) == 0:
                         break
                     node = random.choice(nodes)
+                    if len(solution[i]) > 0 and not self.graph.has_edge(solution[i][-1], node):
+                        continue
                     solution[i].append(node)
                     nodes.remove(node)
                 
@@ -82,7 +84,11 @@ class GeneticAlgo(AbstractAlgo):
                 for idx, vehicle in enumerate(solution): 
                     vehicle_distance = 0
                     for i in range(len(vehicle) - 1):
-                        vehicle_distance += self.graph[vehicle[i]][vehicle[i + 1]]["weight"]
+                        if self.graph.has_edge(vehicle[i], vehicle[i + 1]): 
+                            vehicle_distance += self.graph[vehicle[i]][vehicle[i + 1]]["weight"]
+                        else:
+                            vehicle_distance = float('inf')
+                            break
                         vehicle_distances.append(vehicle_distance)
                     total_distance += vehicle_distance
                 distances.append(total_distance)
