@@ -27,7 +27,7 @@ class TabuAlgo(AbstractAlgo):
         nb_res = self.num_vehicles * len(full_node)
 
         initial_paths = [[self.start_node] for _ in range(self.num_vehicles)]
-        res = [initial_paths] 
+        res = [initial_paths]
 
         i = 0
         while i < len(full_node) * 2:
@@ -37,7 +37,6 @@ class TabuAlgo(AbstractAlgo):
                     last_node = vehicle_path[-1]
                     neighbors = list(self.graph.neighbors(last_node))
 
-                    # noeud déjà visités
                     used_nodes = set(n for path in vehicles_paths for n in path)
                     new_neighbors = [n for n in neighbors if n not in used_nodes]
                     np.random.shuffle(new_neighbors)
@@ -89,6 +88,11 @@ class TabuAlgo(AbstractAlgo):
                     vehicle_distance += self.graph[u][v]['weight']
                 else:
                     print(f"No edge between {u} and {v}")
+                    return float('inf') 
+            distance_per_vehicules.append(vehicle_distance)
+        return distance_per_vehicules
+    
+    def calculate_distance(self, path):
         distance_per_vehicules = self.get_distance_per_vehicule(path)
         return sum(distance_per_vehicules)
     
@@ -111,8 +115,6 @@ class TabuAlgo(AbstractAlgo):
 
     def tabou(self):
         current_sol = self.random_path()
-        if current_sol is None:
-            return None
         #print("current",current_sol)
         neighbors = self.generate_all_neighbors(current_sol)
         best_solution = []
@@ -159,8 +161,6 @@ class TabuAlgo(AbstractAlgo):
         similar_results_count = 0
         for iteration in range(self.max_iterations):
             paths = self.tabou()
-            if paths is None:
-                break
             total_distance = self.calculate_distance(paths)
             distance_per_vehicules = self.get_distance_per_vehicule(paths)
             if total_distance < best_distance and np.std(distance_per_vehicules) <= best_distance_standard_deviation_per_vehicles:
