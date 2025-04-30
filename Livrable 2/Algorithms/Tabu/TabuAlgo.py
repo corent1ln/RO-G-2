@@ -133,8 +133,6 @@ class TabuAlgo(AbstractAlgo):
         for iteration in range(self.max_iterations):
             paths = self.tabou()
             if paths is None:
-                self.distance = np.inf
-                self.paths = [[] for _ in range(self.num_vehicles)]
                 break
             total_distance = self.calculate_distance(paths)
             distance_per_vehicules = self.get_distance_per_vehicule(paths)

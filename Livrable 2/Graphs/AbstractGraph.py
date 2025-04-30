@@ -1,7 +1,6 @@
 import networkx as nx
 from abc import ABC, abstractmethod
 import uuid
-import copy
 import random
 
 class AbstractGraph(nx.Graph,ABC):

@@ -6,7 +6,7 @@ from mpl_toolkits.basemap import Basemap
 class Plot: #todo optimize all
     _node_positions = {}
     _used_colors = []
-    _available_colors = ['green', 'blue', 'pink', 'cyan', 'purple', 'brown', 'black']
+    _available_colors = ['green', 'blue', 'pink', 'cyan', 'purple', 'black']
 
     @staticmethod
     def get_color():
