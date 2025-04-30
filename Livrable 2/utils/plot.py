@@ -329,3 +329,43 @@ class Plot: #todo optimize all
         plt.legend()
         plt.grid()
         plt.show()
+
+    @staticmethod
+    def plot_time_vs_parallel_solutions(parallel_counts, times):
+        plt.figure(figsize=(10, 6))
+        plt.plot(parallel_counts, times, marker='o', linestyle='-', color='darkorange')
+        plt.title("Temps d'exécution vs Nombre de solutions parallèles (GeneticAlgo)")
+        plt.xlabel("Nombre de solutions parallèles")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_distance_vs_mutation_rate(mutation_rates, distances):
+        """
+        Plots the distance vs mutation rate graph.
+
+        :param mutation_rates: List of mutation rates tested
+        :param distances: List of corresponding distances
+        """
+        plt.figure(figsize=(10, 6))
+        plt.plot(mutation_rates, distances, marker='o', linestyle='-', color='blue')
+        plt.title("Distance vs Mutation Rate (GeneticAlgo)")
+        plt.xlabel("Mutation Rate")
+        plt.ylabel("Distance")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_time_vs_blocked_edges(percentages, times):
+        plt.figure(figsize=(10, 6))
+        plt.plot(percentages, times, marker='o', linestyle='-', color='teal')
+        plt.title("Temps d'exécution vs Pourcentage d'arêtes bloquées")
+        plt.xlabel("Pourcentage d'arêtes bloquées")
+        plt.ylabel("Temps d'exécution (secondes)")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+
