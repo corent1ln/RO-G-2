@@ -43,7 +43,6 @@ class TabuAlgo(AbstractAlgo):
 
             if  i > self.convergence_threshold:
                 break
-        print("No valid path found after max iterations")
         return None
 
     def get_distance_per_vehicule(self,path):

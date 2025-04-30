@@ -7,18 +7,18 @@ from functools import lru_cache
 
 
 class GeneticAlgo(AbstractAlgo):
-    def __init__(self, graph, name = None, num_vehicles = 5, solutions_in_parallel = 10, min_iterations = 0, max_iterations = 100, convergence_threshold = 5):
-        super().__init__(graph=graph, name=name, num_vehicles=num_vehicles, min_iterations=min_iterations, max_iterations=max_iterations, convergence_threshold=convergence_threshold)
+    def __init__(self, graph, name=None, num_vehicles=5, solutions_in_parallel=10, min_iterations=0, max_iterations=100, convergence_threshold=5, mutation_rate=0.1):
+        super().__init__(graph=graph, name=name, num_vehicles=num_vehicles,
+                         min_iterations=min_iterations, max_iterations=max_iterations,
+                         convergence_threshold=convergence_threshold)
         self.solutions_in_parallel = solutions_in_parallel
-
+        self.start_node = list(self.graph.nodes)[0]
+        self.mutation_rate = mutation_rate
 
     def get_random_solutions(self):
-        # Generate a list(solution) of lists(containing the destination per vehicle)
-        # Each vehicle will have a random path
-        # The path will be a random permutation of the nodes
-
+        # Génère des solutions aléatoires initiales
         solutions = []
-
+        nodes = list(self.graph.nodes)[1:]  # Exclut le noeud de départ
         for _ in range(self.solutions_in_parallel):
             # Mélange les noeuds pour créer une solution aléatoire
             shuffled = random.sample(nodes, len(nodes))
@@ -102,55 +102,51 @@ class GeneticAlgo(AbstractAlgo):
         return new_solutions
 
     def run(self):
-        best_distance = float('inf')
-        start_time = time.time()
-        # Run the genetic algorithm
-        # Generate a random solution
-        solutions = self.get_random_solutions()
-        self.distance_history = []
-        similar_results_count = 0
-        for iteration in range(1, self.max_iterations + 1):
-            distances = []
-            standard_deviations = []
-            # Sort solutions by their total distance
-            for solution in solutions:
-                total_distance = 0
-                vehicle_distances = []
-                for idx, vehicle in enumerate(solution): 
-                    vehicle_distance = 0
-                    for i in range(len(vehicle) - 1):
-                        vehicle_distance += self.graph[vehicle[i]][vehicle[i + 1]]["weight"]
-                        vehicle_distances.append(vehicle_distance)
-                    total_distance += vehicle_distance
-                distances.append(total_distance)
-                standard_deviations.append(np.std(vehicle_distances))
+        # Exécute l'algorithme génétique
+        start_time = time.time()  # Temps de début
+        best_distance = float("inf")  # Meilleure distance trouvée
+        solutions = self.get_random_solutions()  # Génère des solutions initiales
+        self.distance_history = []  # Historique des distances
+        similar_results_count = 0  # Compteur de convergence
 
-            scores = [distances[i] + standard_deviations[i] for i in range(len(distances))]
+        for iteration in range(1, self.max_iterations + 1):
+            # Évalue toutes les solutions
+            evaluations = [self.evaluate_solution(sol) for sol in solutions]
+            distances = [e[0] for e in evaluations]
+            stds = [e[1] for e in evaluations]
+
+            # Calcule les scores en combinant distance et écart-type
+            scores = [distances[i] + stds[i] for i in range(len(solutions))]
             sorted_indices = np.argsort(scores)
-            solutions = [solutions[i] for i in sorted_indices[:len(solutions) // 2]] #get half (the betters)
-            
-            current_best_distance = distances[sorted_indices[0]]
-            if current_best_distance < best_distance:
-                best_distance = current_best_distance
+
+            # Sélectionne les meilleures solutions (survivants)
+            survivors = [solutions[i] for i in sorted_indices[:len(solutions) // 2]]
+            best_current = distances[sorted_indices[0]]  # Meilleure distance actuelle
+
+            # Met à jour la meilleure distance si nécessaire
+            if best_current < best_distance:
+                best_distance = best_current
             self.distance_history.append(best_distance)
+
+            # Vérifie la convergence
             if len(self.distance_history) > 1 and self.distance_history[-1] == self.distance_history[-2]:
                 similar_results_count += 1
             else:
                 similar_results_count = 0
-
-            if similar_results_count >= self.convergence_threshold and iteration > self.min_iterations:
+            if similar_results_count >= self.convergence_threshold and iteration >= self.min_iterations:
                 break
 
-            # Create new solutions by combining the best solutions
-            solutions = self.mutate(solutions)
+            # Génère les enfants par croisement et mutation
+            children = self.crossover(survivors)
+            solutions = self.mutate(children)
 
-        self.paths = solutions[0]
-        self.distance = self.distance_history[-1]
+        # Évalue la solution finale
+        final_solution = solutions[0]
+        self.paths = final_solution
+        self.distance, _, vehicle_distances = self.evaluate_solution(final_solution)
+        self.distance_per_vehicles = vehicle_distances
+        self.distance_average_per_vehicles = np.mean(vehicle_distances)
+        self.distance_standard_deviation_per_vehicles = np.std(vehicle_distances)
         self.iterations_needed = iteration - similar_results_count
         self.total_interations_realized = iteration
-        self.distance_per_vehicles = [sum(self.graph[vehicle[i]][vehicle[i + 1]]["weight"] for i in range(len(vehicle) - 1)) for vehicle in self.paths]
-        self.distance_average_per_vehicles = np.mean(self.distance_per_vehicles)
-        self.distance_standard_deviation_per_vehicles = np.std(self.distance_per_vehicles)
-        self.execution_time = time.time() - start_time
-
-
+        self.execution_time = time.time() - start_time  # Temps d'exécution total

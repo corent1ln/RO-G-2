@@ -80,7 +80,7 @@ class Plot: #todo optimize all
         max_lon += lon_margin
 
         plt.figure(figsize=(10, 8))
-        m = Basemap(projection='merc', llcrnrlat=min_lat, urcrnrlat=max_lat,llcrnrlon=min_lon, urcrnrlon=max_lon, resolution='i') #todo see cartopy
+        m = Basemap(projection='merc', llcrnrlat=min_lat, urcrnrlat=max_lat,llcrnrlon=min_lon, urcrnrlon=max_lon, resolution='i')
         m.drawcoastlines()
         m.drawcountries()
         m.drawmapboundary(fill_color='lightblue')
