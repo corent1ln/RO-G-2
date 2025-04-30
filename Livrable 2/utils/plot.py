@@ -6,7 +6,7 @@ from mpl_toolkits.basemap import Basemap
 class Plot: #todo optimize all
     _node_positions = {}
     _used_colors = []
-    _available_colors = ['green', 'blue', 'pink', 'cyan', 'purple', 'brown', 'black']
+    _available_colors = ['green', 'blue', 'pink', 'cyan', 'purple', 'black']
 
     @staticmethod
     def get_color():
@@ -80,7 +80,7 @@ class Plot: #todo optimize all
         max_lon += lon_margin
 
         plt.figure(figsize=(10, 8))
-        m = Basemap(projection='merc', llcrnrlat=min_lat, urcrnrlat=max_lat,llcrnrlon=min_lon, urcrnrlon=max_lon, resolution='i') #todo see cartopy
+        m = Basemap(projection='merc', llcrnrlat=min_lat, urcrnrlat=max_lat,llcrnrlon=min_lon, urcrnrlon=max_lon, resolution='i')
         m.drawcoastlines()
         m.drawcountries()
         m.drawmapboundary(fill_color='lightblue')
@@ -152,6 +152,7 @@ class Plot: #todo optimize all
             plt.legend()
             plt.show()
 
+    @staticmethod
     def plot_time_over_iterations_comparison(algorithms_results,step):
         for algo_name, execution_time in algorithms_results.items():
             iterations = range(step, step * len(execution_time) + 1, step)
@@ -164,6 +165,16 @@ class Plot: #todo optimize all
         plt.show()
 
     @staticmethod
+    def plot_num_ants_vs_execution_time(num_ants_values, execution_times):
+        import matplotlib.pyplot as plt
+        plt.plot(num_ants_values, execution_times, marker='o')
+        plt.xlabel("Number of Ants")
+        plt.ylabel("Execution Time (seconds)")
+        plt.title("Execution Time over Number of Ants")
+        plt.grid()
+        plt.show()
+
+    @staticmethod
     def plot_iterations_over_node_sizes(algorithms_results):
             plt.plot(algorithms_results, linewidth=2)
             plt.title("Comparison of total iterations over node size")
@@ -171,6 +182,15 @@ class Plot: #todo optimize all
             plt.ylabel("Iteration")
             plt.legend()
             plt.show()
+
+    @staticmethod
+    def plot_num_ants_vs_distance(num_ants_values, distances):
+        plt.plot(num_ants_values, distances, marker='o')
+        plt.xlabel("Number of Ants")
+        plt.ylabel("Distance")
+        plt.title("Distance vs Number of Ants")
+        plt.grid()
+        plt.show()
 
 
     @staticmethod
@@ -184,7 +204,6 @@ class Plot: #todo optimize all
         plt.ylabel("Temps d'exécution (s)")
         plt.grid(True)
         plt.show()
-
 
     @staticmethod
     def plot_time_vs_node_count(node_counts, times):
@@ -272,6 +291,7 @@ class Plot: #todo optimize all
         plt.grid(True)
         plt.tight_layout()
         
+    @staticmethod
     def plot_average_algorithms_distances(algorithms_results):
         for algo_name, stats in algorithms_results.items():
             plt.plot(stats["best"], label=f"{algo_name} - Best", linestyle='--', linewidth=2)
@@ -284,4 +304,28 @@ class Plot: #todo optimize all
         plt.legend()
         plt.grid()
 
+        plt.show()
+
+    @staticmethod
+    def plot_execution_time_vs_nodes(node_counts, results):
+        import matplotlib.pyplot as plt
+        for num_ants, times in results.items():
+            plt.plot(node_counts, times, marker='o', label=f"{num_ants} Ants")
+        plt.xlabel("Number of City")
+        plt.ylabel("Execution Time (seconds)")
+        plt.title("Execution Time over Number of Nodes")
+        plt.legend()
+        plt.grid()
+        plt.show()
+
+    @staticmethod
+    def plot_distance_vs_nodes(node_counts, results):
+        import matplotlib.pyplot as plt
+        for num_ants, distances in results.items():
+            plt.plot(node_counts, distances, marker='o', label=f"{num_ants} Ants")
+        plt.xlabel("Number of Nodes")
+        plt.ylabel("Distance Found")
+        plt.title("Distance Found vs Number of Nodes")
+        plt.legend()
+        plt.grid()
         plt.show()
