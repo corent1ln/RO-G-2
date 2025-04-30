@@ -26,9 +26,8 @@ class TabuAlgo(AbstractAlgo):
         self.start_node = full_node[0]
         nb_res = self.num_vehicles * len(full_node)
 
-        #Init each vehicles from start node
         initial_paths = [[self.start_node] for _ in range(self.num_vehicles)]
-        res = [initial_paths]  #Solution list 
+        res = [initial_paths] 
 
         i = 0
         while i < len(full_node) * 2:
@@ -38,7 +37,7 @@ class TabuAlgo(AbstractAlgo):
                     last_node = vehicle_path[-1]
                     neighbors = list(self.graph.neighbors(last_node))
 
-                    # Visited nodes
+                    # noeud déjà visités
                     used_nodes = set(n for path in vehicles_paths for n in path)
                     new_neighbors = [n for n in neighbors if n not in used_nodes]
                     np.random.shuffle(new_neighbors)
@@ -48,13 +47,12 @@ class TabuAlgo(AbstractAlgo):
                         new_vehicle_paths[v_idx].append(new_neighbor)
                         temp_res.append(new_vehicle_paths)
 
-            # Reduce solutions number
             if len(temp_res) > nb_res:
                 np.random.shuffle(temp_res)
                 res = temp_res[:nb_res]
             else:
                 res = temp_res
-            # Check if all nodes are visited
+
             for vehicles_paths in res:
                 all_visited = set(n for path in vehicles_paths for n in path)
                 if len(all_visited) == len(full_node):
@@ -70,6 +68,7 @@ class TabuAlgo(AbstractAlgo):
                             break
 
                     if not valid:
+                        continue
 
                     if any(len(p) == 2 for p in final_paths):
                         continue
